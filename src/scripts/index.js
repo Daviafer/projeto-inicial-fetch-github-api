@@ -1,13 +1,16 @@
 // importando user
-import { user } from '/src/scripts/services/user.js'
+import { getUser } from '/src/scripts/services/user.js'
 // importando repositories
-import { repositories } from '/src/scripts/services/repositories.js'
-
+import { getRepositories } from '/src/scripts/services/repositories.js'
+// importantdo de objects
+import { user } from '/src/scripts/objects/user.js'
+// importando o screen - informaçoes tela
+import { screen } from '/src/scripts/objects/screen.js'
 
 // clique com botão ao pesquisar
 document.getElementById('btn-search').addEventListener('click', () => {
   const userName = document.getElementById('input-search').value
-  getUserProfile(userName)
+  getUserData(userName)
 })
 // tecla ENTER ao pesquisar
 document.getElementById('input-search').addEventListener('keyup', (e) => {
@@ -16,41 +19,40 @@ document.getElementById('input-search').addEventListener('keyup', (e) => {
   const isEnterKeyPressed = key === 13
 
   if (isEnterKeyPressed) {
-    getUserProfile(userName)
+    getUserData(userName)
   }
 })
 
-function getUserProfile(userName){
-  user(userName).then(userData => {
-    //console.log(userData)
-    //avatar  //bio   //name
-    let userInfo = 
-        ` <div class="info">
-            <img src="${userData.avatar_url} alt="Foto perfil usuário"/>
-            <div class="data">
-              <h1> ${userData.name ?? 'Não possui nome cadastrado :/'} </h1>
-              <p> ${userData.bio ?? 'Não possui biografia cadastrado'}</p>
-            </div>
-          </div>`
-    document.querySelector('.profile-data').innerHTML = userInfo
-    //buscando repositórios do usuário pesquisado
-    getUserRepositories(userName)
-  })
+async function getUserData(userName){
+  
+  const userResponse = await getUser(userName)
+  const repositoriesResponse = await getRepositories(userName)
+  
+  user.setInfo(userResponse)
+  user.setRepositories(repositoriesResponse)
+
+  screen.renderUser(user)
 }
 
-function getUserRepositories(userName) {
-  repositories(userName).then(reposData => {
-  // percorrendo array, criando lista  
-    let repositoriesItens = ""
-    //lista
-    reposData.forEach(repo => {
-      repositoriesItens += `<li> <a href="${repo.html_url}" target="_blank"> ${repo.name} </a></li>`
-    })
-    //pegando dados li e jogando na ul
-    document.querySelector('.profile-data').innerHTML += 
-    `<div class="repositories section">
-      <h2> Alguns repositórios</h2>
-      <ul> ${repositoriesItens}</ul>
-    </div>`
-  })
-}
+
+
+// ----------------------------------------------------
+// função foi substituida pelo método screen
+// ----------------------------------------------------
+
+// function getUserRepositories(userName) {
+//   getRepositories(userName).then(reposData => {
+//   // percorrendo array, criando lista  
+//     let repositoriesItens = ""
+//     //lista
+//     reposData.forEach(repo => {
+//       repositoriesItens += `<li> <a href="${repo.html_url}" target="_blank"> ${repo.name} </a></li>`
+//     })
+//     //pegando dados li e jogando na ul
+//     document.querySelector('.profile-data').innerHTML += 
+//     `<div class="repositories section">
+//       <h2> Alguns repositórios</h2>
+//       <ul> ${repositoriesItens}</ul>
+//     </div>`
+//   })
+// }

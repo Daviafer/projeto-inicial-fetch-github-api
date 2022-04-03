@@ -2,10 +2,10 @@
 import {baseUrl} from '/src/scripts/variables.js'
 
 // buscando dados iniciais 
-async function user(userName) {
+async function getUser(userName) {
   const response = await fetch(`${baseUrl}/${userName}`)
   return await response.json()
 }
 
 //exportando
-export {user}
+export { getUser }
